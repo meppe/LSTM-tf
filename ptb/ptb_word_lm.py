@@ -60,7 +60,7 @@ from __future__ import print_function
 
 from os import system
 import os
-from tensorflow.python.platform import gfile
+
 
 import time
 
@@ -94,7 +94,6 @@ FLAGS = flags.FLAGS
 
 def data_type():
     return tf.float16 if FLAGS.use_fp16 else tf.float32
-
 
 class PTBModel(object):
     """The PTB model."""
@@ -459,7 +458,6 @@ def main(_):
                     next_syms = in_chrs
 
         print("Finished all -- End!")
-
 
 if __name__ == "__main__":
     tf.app.run()
