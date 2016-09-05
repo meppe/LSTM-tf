@@ -404,7 +404,7 @@ def main(_):
             test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
             print("Test Perplexity: %.8f" % test_perplexity)
 
-            model_name = "model"+str(time())+".ckpt"
+            model_name = "model.ckpt"
             saver.save(session, model_name)
             system("ln -s "+model_name+" last_model.ckpt")
 
