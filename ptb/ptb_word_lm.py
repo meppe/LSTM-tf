@@ -65,15 +65,13 @@ import time
 import numpy as np
 import tensorflow as tf
 
-# from tensorflow.models.rnn.ptb import reader
 from ptb.reader import Reader
-# from reader import Reader
 
+# This is used for Python Debug Configuration only
 # import pydevd
 # server_ip = '192.168.4.232'
 # server_port=51234
 # pydevd.settrace(server_ip, port=server_port, stdoutToServer=True, stderrToServer=True)
-
 
 flags = tf.flags
 logging = tf.logging
