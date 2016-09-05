@@ -69,10 +69,10 @@ import tensorflow as tf
 from ptb.reader import Reader
 # from reader import Reader
 
-import pydevd
-server_ip = '192.168.4.232'
-server_port=51234
-pydevd.settrace(server_ip, port=server_port, stdoutToServer=True, stderrToServer=True)
+# import pydevd
+# server_ip = '192.168.4.232'
+# server_port=51234
+# pydevd.settrace(server_ip, port=server_port, stdoutToServer=True, stderrToServer=True)
 
 
 flags = tf.flags
