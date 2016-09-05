@@ -87,6 +87,8 @@ flags.DEFINE_bool("use_fp16", False,
 flags.DEFINE_bool("dev_data", True,
                   "Train using toy data files")
 
+flags.DEFINE_string("working_path", os.getcwd())
+
 FLAGS = flags.FLAGS
 
 
@@ -356,6 +358,7 @@ def get_next_symbols(reader, past_symbols, model, session):
     return next_syms
 
 def main(_):
+
     # Training pipeline
 
     if not FLAGS.data_path:
@@ -387,7 +390,7 @@ def main(_):
         print("Do you want to restore the last model (y/n)?")
         yn = raw_input()
         if yn == "y":
-            saver.restore(session, "last_model.ckpt")
+            saver.restore(session, FLAGS.working_path+"/last_model")
         else:
             init_op = tf.initialize_all_variables()
             init_op.run()
@@ -406,7 +409,7 @@ def main(_):
             test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
             print("Test Perplexity: %.8f" % test_perplexity)
 
-            model_path = "/home/meppe/Coding/LSTM-tf/ptb/model_"+str(time.strftime("%d_%b_%Y_%H:%M:%S", time.localtime()))
+            model_path = FLAGS.working_path+"/model_"+str(time.strftime("%d_%b_%Y_%H:%M:%S", time.localtime()))
             save_path = saver.save(session, model_path)
             print("Model saved in path: %s" % save_path)
             system("ln -s "+model_path+" last_model")
