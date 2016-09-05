@@ -406,11 +406,11 @@ def main(_):
             test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
             print("Test Perplexity: %.8f" % test_perplexity)
 
-            model_name = "/home/meppe/Coding/LSTM-tf/pbt/model.ckpt"
-            print(gfile.IsDirectory(os.path.dirname(model_name)))
-            save_path = saver.save(session, model_name)
-            print("Model saved in file: %s" % save_path)
-            system("ln -s "+model_name+" last_model.ckpt")
+            model_path = "models"
+            print(gfile.IsDirectory(os.path.dirname(model_path)))
+            save_path = saver.save(session, model_path)
+            # print("Model saved in path: %s" % save_path)
+            # system("ln -s "+model_path+" last_model")
 
         # Text generation pipeline:
         # Decide which model to use as generation model
