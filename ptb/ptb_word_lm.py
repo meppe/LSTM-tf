@@ -280,10 +280,10 @@ class DevConfig(object):
     learning_rate = 1.0
     max_grad_norm = 10
     num_layers = 1
-    num_steps = 3
+    num_steps = 2
     hidden_size = 12
-    max_epoch = 2
-    max_max_epoch = 5
+    max_epoch = 10
+    max_max_epoch = 30
     keep_prob = 1.0
     lr_decay = 0.5
     batch_size = 1
