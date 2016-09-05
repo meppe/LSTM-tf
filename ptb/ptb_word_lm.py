@@ -407,6 +407,7 @@ def main(_):
             print("Test Perplexity: %.8f" % test_perplexity)
 
             model_path = "models"
+            system("mkdir " +model_path)
             print(gfile.IsDirectory(os.path.dirname(model_path)))
             save_path = saver.save(session, model_path)
             # print("Model saved in path: %s" % save_path)
