@@ -87,7 +87,7 @@ flags.DEFINE_bool("use_fp16", False,
 flags.DEFINE_bool("dev_data", True,
                   "Train using toy data files")
 
-flags.DEFINE_string("working_path", os.getcwd())
+flags.DEFINE_string("working_path", os.getcwd(), "working_path")
 
 FLAGS = flags.FLAGS
 
