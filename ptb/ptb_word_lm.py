@@ -65,7 +65,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from ptb.reader import Reader
+from reader import Reader
 
 # This is used for Python Debug Configuration only
 # import pydevd
