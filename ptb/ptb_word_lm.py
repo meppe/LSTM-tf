@@ -410,7 +410,7 @@ def main(_):
             system("mkdir " +model_path)
             print(gfile.IsDirectory(os.path.dirname(model_path)))
             save_path = saver.save(session, model_path)
-            # print("Model saved in path: %s" % save_path)
+            print("Model saved in path: %s" % save_path)
             # system("ln -s "+model_path+" last_model")
 
         # Text generation pipeline:
