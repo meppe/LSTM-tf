@@ -1,3 +1,5 @@
 git add *.py
-git commit -m "modification"
+git add *.bat
+git add *.sh
+git commit -m "modification on $(date)"
 git push

@@ -407,9 +407,9 @@ def main(_):
             print("Test Perplexity: %.8f" % test_perplexity)
 
             model_path = "/home/meppe/Coding/LSTM-tf/ptb/models"
-            system("mkdir " +model_path)
-            print(gfile.IsDirectory(os.path.dirname(model_path)))
-            save_path = saver.save(session, model_path)
+            if gfile.IsDirectory(os.path.dirname(model_path)) == False:
+                system("mkdir " +model_path)
+            save_path = saver.save(session)
             print("Model saved in path: %s" % save_path)
             # system("ln -s "+model_path+" last_model")
 
