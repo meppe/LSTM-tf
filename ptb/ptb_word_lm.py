@@ -73,12 +73,10 @@ logging = tf.logging
 
 flags.DEFINE_string(
     "model", "small",
-    "A type of model. Possible options are: small, medium, large.")
+    "A type of model. Possible options are: small, medium, large, test, dev.")
 flags.DEFINE_string("data_path", None, "data_path")
 flags.DEFINE_bool("use_fp16", False,
                   "Train using 16-bit floats instead of 32bit floats")
-flags.DEFINE_bool("dev_data", True,
-                  "Train using toy data files")
 
 flags.DEFINE_string("working_path", os.getcwd(), "working_path")
 
@@ -358,7 +356,11 @@ def main(_):
 
     r = Reader()
 
-    raw_data = r.ptb_raw_data(FLAGS.data_path, FLAGS.dev_data)
+    dev_data = False
+    if FLAGS.model == "dev":
+        dev_data = True
+
+    raw_data = r.ptb_raw_data(FLAGS.data_path, dev_data)
     train_data, valid_data, test_data, _ = raw_data
 
     config = get_config()
