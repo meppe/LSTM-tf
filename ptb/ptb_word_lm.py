@@ -406,9 +406,7 @@ def main(_):
             test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
             print("Test Perplexity: %.8f" % test_perplexity)
 
-            model_path = "/home/meppe/Coding/LSTM-tf/ptb/models"+str(time())
-            if not gfile.IsDirectory(os.path.dirname(model_path)):
-                system("mkdir " +model_path)
+            model_path = "/home/meppe/Coding/LSTM-tf/ptb/model_"+str(time.clock())
             save_path = saver.save(session, model_path)
             print("Model saved in path: %s" % save_path)
             # system("ln -s "+model_path+" last_model")
