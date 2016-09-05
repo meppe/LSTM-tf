@@ -59,6 +59,8 @@ from __future__ import division
 from __future__ import print_function
 
 from os import system
+import os
+from tensorflow.python.platform import gfile
 
 import time
 
@@ -278,8 +280,8 @@ class DevConfig(object):
     num_layers = 1
     num_steps = 3
     hidden_size = 12
-    max_epoch = 5
-    max_max_epoch = 30
+    max_epoch = 2
+    max_max_epoch = 5
     keep_prob = 1.0
     lr_decay = 0.5
     batch_size = 1
@@ -405,6 +407,7 @@ def main(_):
             print("Test Perplexity: %.8f" % test_perplexity)
 
             model_name = "/home/meppe/Coding/LSTM-tf/pbt/model.ckpt"
+            print(gfile.IsDirectory(os.path.dirname(model_name)))
             save_path = saver.save(session, model_name)
             print("Model saved in file: %s" % save_path)
             system("ln -s "+model_name+" last_model.ckpt")
