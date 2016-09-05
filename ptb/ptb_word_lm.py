@@ -58,7 +58,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os.system
+from os import system
 
 import time
 
@@ -402,7 +402,7 @@ def main(_):
 
             model_name = "model"+str(time())+".ckpt"
             saver.save(session, model_name)
-            os.system("ln -s "+model_name+" last_model.ckpt")
+            system("ln -s "+model_name+" last_model.ckpt")
 
         # Text generation pipeline:
         # Decide which model to use as generation model
