@@ -412,7 +412,7 @@ def main(_):
             model_path = FLAGS.working_path+"/model_"+str(time.strftime("%d_%b_%Y_%H:%M:%S", time.localtime()))
             save_path = saver.save(session, model_path)
             print("Model saved in path: %s" % save_path)
-            system("rm "+model_path)
+            system("rm last_model")
             system("ln -s "+model_path+" last_model")
 
         # Text generation pipeline:
