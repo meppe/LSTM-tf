@@ -92,8 +92,11 @@ class PTBModel(object):
         size = config.hidden_size
         vocab_size = config.vocab_size
 
+        target_size = num_steps
+        # target_size = 1 # Only check the next symbol or word.
+
         self._input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-        self._targets = tf.placeholder(tf.int32, [batch_size, num_steps])
+        self._targets = tf.placeholder(tf.int32, [batch_size, target_size])
 
         # Slightly better results can be obtained with forget gate biases
         # initialized to 1 but the hyperparameters of the model would need to be
