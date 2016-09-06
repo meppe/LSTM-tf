@@ -52,16 +52,20 @@ To run:
 $ python ptb_word_lm.py --data_path=simple-examples/data/
 
 """
+
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+from os import system
+import os
 
 import time
 
 import numpy as np
 import tensorflow as tf
 
-# from tensorflow.models.rnn.ptb import reader
 from reader import Reader
 
 flags = tf.flags
@@ -76,12 +80,13 @@ flags.DEFINE_bool("use_fp16", False,
 flags.DEFINE_bool("dev_data", True,
                   "Train using toy data files")
 
+flags.DEFINE_string("working_path", os.getcwd(), "working_path")
+
 FLAGS = flags.FLAGS
 
 
 def data_type():
     return tf.float16 if FLAGS.use_fp16 else tf.float32
-
 
 class PTBModel(object):
     """The PTB model."""
@@ -267,9 +272,9 @@ class DevConfig(object):
     learning_rate = 1.0
     max_grad_norm = 10
     num_layers = 1
-    num_steps = 3
+    num_steps = 2
     hidden_size = 12
-    max_epoch = 5
+    max_epoch = 10
     max_max_epoch = 30
     keep_prob = 1.0
     lr_decay = 0.5
@@ -345,6 +350,7 @@ def get_next_symbols(reader, past_symbols, model, session):
     return next_syms
 
 def main(_):
+
     # Training pipeline
 
     if not FLAGS.data_path:
@@ -361,6 +367,7 @@ def main(_):
     eval_config.num_steps = 1
 
     with tf.Graph().as_default(), tf.Session() as session:
+
         initializer = tf.random_uniform_initializer(-config.init_scale,
                                                     config.init_scale)
         with tf.variable_scope("model", reuse=None, initializer=initializer):
@@ -369,23 +376,36 @@ def main(_):
             mvalid = PTBModel(is_training=False, config=config)
             mtest = PTBModel(is_training=False, config=eval_config)
 
-        tf.initialize_all_variables().run()
 
-        for i in range(config.max_max_epoch):
-            lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
-            m.assign_lr(session, config.learning_rate * lr_decay)
+        saver = tf.train.Saver()
 
-            print("Epoch: %d Learning rate: %.8f" % (i + 1, session.run(m.lr)))
-            train_perplexity = run_epoch(session, m, train_data, m.train_op, r,
-                                         verbose=True)
-            print("Epoch: %d Train Perplexity: %.8f" % (i + 1, train_perplexity))
-            valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op(), r)
-            print("Epoch: %d Valid Perplexity: %.8f" % (i + 1, valid_perplexity))
+        print("Do you want to restore the last model (y/n)?")
+        yn = raw_input()
+        if yn == "y":
+            saver.restore(session, FLAGS.working_path+"/last_model")
+        else:
+            init_op = tf.initialize_all_variables()
+            init_op.run()
 
-        test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
-        print("Test Perplexity: %.8f" % test_perplexity)
+            for i in range(config.max_max_epoch):
+                lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
+                m.assign_lr(session, config.learning_rate * lr_decay)
 
-        # TODO: save learned model
+                print("Epoch: %d Learning rate: %.8f" % (i + 1, session.run(m.lr)))
+                train_perplexity = run_epoch(session, m, train_data, m.train_op, r,
+                                             verbose=True)
+                print("Epoch: %d Train Perplexity: %.8f" % (i + 1, train_perplexity))
+                valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op(), r)
+                print("Epoch: %d Valid Perplexity: %.8f" % (i + 1, valid_perplexity))
+
+            test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
+            print("Test Perplexity: %.8f" % test_perplexity)
+
+            model_path = FLAGS.working_path+"/model_"+str(time.strftime("%d_%b_%Y_%H:%M:%S", time.localtime()))
+            save_path = saver.save(session, model_path)
+            print("Model saved in path: %s" % save_path)
+            system("rm last_model")
+            system("ln -s "+model_path+" last_model")
 
         # Text generation pipeline:
         # Decide which model to use as generation model
@@ -431,7 +451,6 @@ def main(_):
                     next_syms = in_chrs
 
         print("Finished all -- End!")
-
 
 if __name__ == "__main__":
     tf.app.run()
