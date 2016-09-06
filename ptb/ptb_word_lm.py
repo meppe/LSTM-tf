@@ -52,9 +52,13 @@ To run:
 $ python ptb_word_lm.py --data_path=simple-examples/data/
 
 """
+
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
+import os.system
 
 import time
 
@@ -62,7 +66,8 @@ import numpy as np
 import tensorflow as tf
 
 # from tensorflow.models.rnn.ptb import reader
-from reader import Reader
+from ptb.reader import Reader
+# from reader import Reader
 
 flags = tf.flags
 logging = tf.logging
@@ -361,6 +366,7 @@ def main(_):
     eval_config.num_steps = 1
 
     with tf.Graph().as_default(), tf.Session() as session:
+
         initializer = tf.random_uniform_initializer(-config.init_scale,
                                                     config.init_scale)
         with tf.variable_scope("model", reuse=None, initializer=initializer):
@@ -369,23 +375,34 @@ def main(_):
             mvalid = PTBModel(is_training=False, config=config)
             mtest = PTBModel(is_training=False, config=eval_config)
 
-        tf.initialize_all_variables().run()
 
-        for i in range(config.max_max_epoch):
-            lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
-            m.assign_lr(session, config.learning_rate * lr_decay)
+        saver = tf.train.Saver()
 
-            print("Epoch: %d Learning rate: %.8f" % (i + 1, session.run(m.lr)))
-            train_perplexity = run_epoch(session, m, train_data, m.train_op, r,
-                                         verbose=True)
-            print("Epoch: %d Train Perplexity: %.8f" % (i + 1, train_perplexity))
-            valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op(), r)
-            print("Epoch: %d Valid Perplexity: %.8f" % (i + 1, valid_perplexity))
+        print("Do you want to restore the last model (y/n)?")
+        yn = raw_input()
+        if yn == "y":
+            saver.restore(session, "last_model.ckpt")
+        else:
+            init_op = tf.initialize_all_variables()
+            init_op.run()
 
-        test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
-        print("Test Perplexity: %.8f" % test_perplexity)
+            for i in range(config.max_max_epoch):
+                lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
+                m.assign_lr(session, config.learning_rate * lr_decay)
 
-        # TODO: save learned model
+                print("Epoch: %d Learning rate: %.8f" % (i + 1, session.run(m.lr)))
+                train_perplexity = run_epoch(session, m, train_data, m.train_op, r,
+                                             verbose=True)
+                print("Epoch: %d Train Perplexity: %.8f" % (i + 1, train_perplexity))
+                valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op(), r)
+                print("Epoch: %d Valid Perplexity: %.8f" % (i + 1, valid_perplexity))
+
+            test_perplexity = run_epoch(session, mtest, test_data, tf.no_op(), r)
+            print("Test Perplexity: %.8f" % test_perplexity)
+
+            model_name = "model"+str(time())+".ckpt"
+            saver.save(session, model_name)
+            os.system("ln -s "+model_name+" last_model.ckpt")
 
         # Text generation pipeline:
         # Decide which model to use as generation model
