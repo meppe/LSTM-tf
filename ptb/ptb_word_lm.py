@@ -374,6 +374,9 @@ def main(_):
     eval_config = get_config()
     eval_config.batch_size = 1
     eval_config.num_steps = 1
+    exp_config = get_config()
+    exp_config.num_steps = 5
+    exp_config.batch_size = 1
 
     with tf.Graph().as_default(), tf.Session() as session:
 
@@ -384,7 +387,7 @@ def main(_):
         with tf.variable_scope("model", reuse=True, initializer=initializer):
             mvalid = PTBModel(is_training=False, config=config)
             mtest = PTBModel(is_training=False, config=eval_config)
-
+            mexp = PTBModel(is_training=False, config=exp_config)
 
         saver = tf.train.Saver()
 
@@ -418,7 +421,7 @@ def main(_):
 
         # Text generation pipeline:
         # Decide which model to use as generation model
-        gmodel = mvalid
+        gmodel = mexp
 
         print("Enter {} of the following words or characters to start with, separated by space".format(gmodel.num_steps))
         symbols_unique = r.id_to_word_table.values()
@@ -432,7 +435,7 @@ def main(_):
                     print("invalid symbol '{}', try again".format(in_chr))
                     continue
             if len(in_chrs) != gmodel.num_steps:
-                print("invalid number of symbols, try again")
+                print("Your entered {} symbols but you should enter {}. Try again".format(len(in_chrs), gmodel.num_steps))
                 continue
 
             next_syms = in_chrs
